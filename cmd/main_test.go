@@ -1,27 +1,100 @@
 package main_test
 
 import (
+	"context"
+	"database/sql"
 	"fmt"
+	"log"
 	"net"
+	"net/http"
 	"os"
 	"testing"
+	"time"
+
+	main "github.com/adolsalamanca/go-rest-boilerplate/cmd"
+	"github.com/adolsalamanca/go-rest-boilerplate/internal/infrastructure/config"
+	"github.com/adolsalamanca/go-rest-boilerplate/internal/infrastructure/environment"
+	"github.com/jackc/pgx/v4"
+	"github.com/stretchr/testify/suite"
 )
 
-func LoadTestEnv(tcpPort string) {
-	os.Setenv("SERVER_PORT", tcpPort)
-	os.Setenv("STATSD_ADDRESS", "")
-	os.Setenv("DB_PORT", "5432")
-	os.Setenv("DB_HOST", "localhost")
-	os.Setenv("DB_USER", "postgres")
-	os.Setenv("DB_NAME", "postgres")
-	os.Setenv("DB_PASS", "")
+const (
+	testDbPort = "5432"
+	testDbHost = "localhost"
+	testDbUser = "adol"
+	testDbName = "database_name"
+)
+
+type AcceptanceTestSuite struct {
+	suite.Suite
+	serverAddress string
+	dbConn        *sql.DB
+	httpClient    *http.Client
 }
 
-func TestGetItems(t *testing.T) {
-	/*
-		cfg := config.LoadConfigProvider()
-		port := getRandomTCPPort(t)
-	*/
+func TestAcceptanceTestSuite(t *testing.T) {
+	suite.Run(t, &AcceptanceTestSuite{})
+}
+
+func (suite *AcceptanceTestSuite) SetupSuite() {
+	tcpPort := getRandomTCPPort(suite.T())
+	hostPort := fmt.Sprintf("localhost:%s", tcpPort)
+
+	suite.serverAddress = fmt.Sprintf("http://%s", hostPort)
+	fmt.Printf("Server address: %s \n", suite.serverAddress)
+	suite.httpClient = &http.Client{
+		Timeout: time.Second * 5,
+	}
+
+	os.Setenv("SERVER_PORT", tcpPort)
+	os.Setenv("DB_PORT", testDbPort)
+	os.Setenv("DB_HOST", testDbHost)
+	os.Setenv("DB_USER", testDbUser)
+	os.Setenv("DB_NAME", testDbName)
+
+	psqlConnectString := fmt.Sprintf("postgres://%s:@%s:%s/%s", testDbUser, testDbHost, testDbPort, testDbName)
+	//psqlConnectString := fmt.Sprintf("postgres://adol:@go-rest-boilerplate_db_1:5432/database_name")
+	fmt.Printf("connection string: %v \n", psqlConnectString)
+
+	conn, err := pgx.Connect(context.Background(), psqlConnectString)
+	suite.NoError(err)
+	_, err = conn.Query(context.Background(), "SELECT 1")
+	suite.NoError(err)
+
+	cfg := config.LoadConfigProvider()
+	err = environment.Verify(cfg)
+	if err != nil {
+		log.Fatalf("could not initialize app: %v", err)
+	}
+
+	go main.Run(cfg)
+
+	waitFor(hostPort)
+}
+
+func (suite *AcceptanceTestSuite) TestGetItems() {
+	suite.Run("Items listed successfully", func() {
+
+		r, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/", suite.serverAddress), nil)
+		suite.NoError(err)
+
+		resp, err := suite.httpClient.Do(r)
+		suite.NoError(err)
+
+		suite.Equal(http.StatusOK, resp.StatusCode)
+	})
+}
+func (suite *AcceptanceTestSuite) TestCreateItems() {
+	suite.Run("Items listed successfully", func() {
+
+		r, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s/", suite.serverAddress), nil)
+		suite.NoError(err)
+
+		resp, err := suite.httpClient.Do(r)
+		suite.NoError(err)
+
+		suite.Equal(http.StatusOK, resp.StatusCode)
+	})
 }
 
 func getRandomTCPPort(t *testing.T) string {
@@ -36,53 +109,18 @@ func getRandomTCPPort(t *testing.T) string {
 	return fmt.Sprintf("%d", portNumber)
 }
 
-/*var (
-	router  *mux.Router
-	client  *http.Client
-	address string
-)
+func waitFor(address string) {
+	timeout := 100 * time.Millisecond
 
-var _ = BeforeSuite(func() {
-
-	client = &http.Client{Timeout: 5 * time.Second}
-	server := muxApp.Server{}
-	deps := &muxApp.Deps{}
-
-	router = server.Start(deps)
-	address = fmt.Sprintf("localhost:%s", getRandomTCPPort(GinkgoT()))
-
-	go func() {
-		if err := http.ListenAndServe(address, router); err != nil {
-			fmt.Printf("unexpected error, %v", err.Error())
+	for i := 0; i <= 50; i++ {
+		_, err := net.DialTimeout("tcp", address, timeout)
+		if err == nil {
+			return
 		}
-	}()
 
-})
-
-var _ = Describe("Mux tests", func() {
-	Describe("Perform request to the server", func() {
-		Context("And root path without any body", func() {
-			It("should return a 200 ok", func() {
-				req, err := http.NewRequest(http.MethodGet, "http://"+address, nil)
-				Expect(err).ShouldNot(HaveOccurred())
-
-				resp, err := client.Do(req)
-				Expect(err).ShouldNot(HaveOccurred())
-				Expect(resp.StatusCode).To(BeEquivalentTo(http.StatusOK))
-			})
-		})
-
-		Context("To any unknown path", func() {
-			It("should return a 404 not found", func() {
-				req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s%s%s", "http://", address, "/fakePath"), nil)
-				Expect(err).ShouldNot(HaveOccurred())
-
-				resp, err := client.Do(req)
-				Expect(err).ShouldNot(HaveOccurred())
-				Expect(resp.StatusCode).To(BeEquivalentTo(http.StatusNotFound))
-			})
-		})
-	})
-
-})
-*/
+		if i%25 == 0 {
+			log.Printf("Waiting for the service: %v\n", address)
+		}
+		time.Sleep(timeout)
+	}
+}

@@ -11,10 +11,11 @@ import (
 
 type Service struct {
 	repo repository.ItemRepository
+	// collector
 }
 
 func (s Service) GetItems() ([]*entities.Item, error) {
-	_, err := s.repo.GetItems()
+	_, err := s.repo.FindAllItems()
 	if err != nil {
 		fmt.Printf("error getting items, %v", err)
 		return nil, err
@@ -24,7 +25,7 @@ func (s Service) GetItems() ([]*entities.Item, error) {
 }
 
 func (s Service) CreateItem(i entities.Item) error {
-	err := s.repo.CreateItem(i)
+	err := s.repo.StoreItem(i)
 	if err != nil {
 		fmt.Printf("error creating items, %v", err)
 		return err

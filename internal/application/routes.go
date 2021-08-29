@@ -9,8 +9,9 @@ import (
 
 func (s *Server) Routes() *mux.Router {
 
-	s.router.Methods(http.MethodGet).HandlerFunc(s.Health())
-	s.router.Methods(http.MethodPost).HandlerFunc(s.CreateItem())
+	s.router.Methods(http.MethodGet).Path("/health").HandlerFunc(s.Health())
+	s.router.Methods(http.MethodGet).Path("/").HandlerFunc(s.GetItems())
+	s.router.Methods(http.MethodPost).Path("/").HandlerFunc(s.CreateItem())
 
 	return s.router
 }
@@ -19,7 +20,7 @@ func (s *Server) Health() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("All good"))
+		w.Write([]byte("Health is good"))
 
 	}
 }

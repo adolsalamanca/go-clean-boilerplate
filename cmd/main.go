@@ -21,17 +21,18 @@ func main() {
 	if err != nil {
 		log.Fatalf("could not initialize app: %v", err)
 	}
-	svc := _interface.NewService(cfg)
-	Run(svc)
+
+	Run(cfg)
 }
 
-func Run(svc *_interface.Service) {
+func Run(cfg config.Provider) {
+	svc := _interface.NewService(cfg)
 	_, cancelFunc := context.WithCancel(context.Background())
 	server := application.NewServer(svc)
 
 	go func() {
 		fmt.Printf("Starting server... \n")
-		if err := http.ListenAndServe(":8080", server.Routes()); err != nil {
+		if err := http.ListenAndServe(fmt.Sprintf(":%s", cfg.GetString("SERVER_PORT")), server.Routes()); err != nil {
 			log.Fatalf("could not initialize server: %v", err)
 		}
 	}()

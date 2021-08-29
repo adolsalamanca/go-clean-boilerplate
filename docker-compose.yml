@@ -9,6 +9,7 @@ services:
       POSTGRES_HOST_AUTH_METHOD: trust
     ports:
       - '5432:5432'
+    profiles: ["acceptance_test"]
     volumes:
       - db:/var/lib/postgresql/data # Since docker 1.9.0 this command auto-creates a 'db' named volume to be used.
       - ./postgres/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
@@ -21,6 +22,7 @@ services:
       DB_NAME: database_name
       DB_USER: adol
       DB_PORT: 5432
+      SERVER_PORT: 8080
       STATSD_HOST: go-rest-boilerplate_statsd_exporter_1
       STATSD_PORT: 9125
     links:
