@@ -1,0 +1,51 @@
+version: '3'
+
+services:
+  db:
+    restart: always
+    image: postgres:12
+    environment:
+      POSTGRES_DB: database_name
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - '5433:5432'
+    volumes:
+      - db:/var/lib/postgresql/data # Since docker 1.9.0 this command auto-creates a 'db' named volume to be used.
+      - ./postgres/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+
+  go_rest_boilerplate:
+    restart: always
+    build: .
+    environment:
+      DB_NAME: database_name
+      DB_USER: adol
+      DB_HOST: go-rest-boilerplate_db
+      DB_PORT: 5437
+      STATSD_HOST: go-rest-boilerplate_statsd_exporter_1
+      STATSD_PORT: 9125
+    links:
+      - db
+    depends_on:
+      - db
+    ports:
+      - "8080:8080"
+
+  statsd_exporter:
+    image: prom/statsd-exporter
+    command: "--log.level=debug --statsd.mapping-config=/tmp/statsd_mapping.conf"
+    ports:
+      - "9102:9102"
+      - "9125:9125/udp"
+    volumes:
+      - "./metrics/statsd_mapping.conf:/tmp/statsd_mapping.conf"
+
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9000:9090"
+    volumes:
+      - ./metrics:/etc/prometheus
+    command: --web.enable-lifecycle  --config.file=/etc/prometheus/prometheus.yml
+
+volumes:
+  db: {}
