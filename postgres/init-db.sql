@@ -12,7 +12,7 @@ SET standard_conforming_strings = on;
 CREATE TABLE public.items (
            id serial,
            name text NOT NULL,
-           price numeric(5,2) NOT NULL,
+           price decimal NOT NULL,
            created_at timestamp without time zone DEFAULT now() NOT NULL,
            updated_at timestamp without time zone DEFAULT now() NOT NULL
 );
