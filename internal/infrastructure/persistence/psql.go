@@ -21,7 +21,6 @@ func NewPsqlRepository(config config.Provider) PsqlRepository {
 	dbName := config.GetString("DB_NAME")
 
 	psqlConnectString := fmt.Sprintf("postgres://%s:@%s:%d/%s", dbUser, dbHost, dbPort, dbName)
-	fmt.Printf("connection string: %v \n", psqlConnectString)
 
 	pool, err := pgxpool.Connect(context.Background(), psqlConnectString)
 	if err != nil {

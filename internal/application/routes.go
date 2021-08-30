@@ -9,9 +9,9 @@ import (
 )
 
 func (s *Server) Routes() *mux.Router {
-	s.router.Methods(http.MethodGet).Path("/health").HandlerFunc(s.Health())
-	s.router.Methods(http.MethodGet).Path("/").HandlerFunc(s.GetItems())
-	s.router.Methods(http.MethodPost).Path("/").HandlerFunc(s.CreateItem())
+	s.router.HandleFunc("/health", s.Health()).Methods(http.MethodGet)
+	s.router.HandleFunc("/items", s.GetItems()).Methods(http.MethodGet)
+	s.router.HandleFunc("/items", s.CreateItem()).Methods(http.MethodPost)
 
 	return s.router
 }

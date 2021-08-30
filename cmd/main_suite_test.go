@@ -79,7 +79,6 @@ func getRandomTCPPort(t *testing.T) string {
 
 func waitForDb() {
 	psqlConnectString := fmt.Sprintf("postgres://%s:@%s:%s/%s", testDbUser, testDbHost, testDbPort, testDbName)
-	fmt.Printf("connection string: %v \n", psqlConnectString)
 
 	ticker := time.NewTimer(100 * time.Millisecond)
 	for i := 0; i <= 50; i++ {
