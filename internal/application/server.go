@@ -7,7 +7,7 @@ import (
 )
 
 type Servicer interface {
-	GetItems() ([]*entities.Item, error)
+	GetItems() ([]entities.Item, error)
 	CreateItem(i entities.Item) error
 }
 

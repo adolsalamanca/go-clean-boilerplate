@@ -24,7 +24,6 @@ func NewPsqlRepository(config config.Provider) PsqlRepository {
 	dbName := config.GetString("DB_NAME")
 
 	psqlConnectString := fmt.Sprintf("postgres://%s:@%s:%d/%s", dbUser, dbHost, dbPort, dbName)
-	//psqlConnectString := fmt.Sprintf("postgres://adol:@go-rest-boilerplate_db_1:5432/database_name")
 	fmt.Printf("connection string: %v \n", psqlConnectString)
 
 	pool, err := pgxpool.Connect(context.Background(), psqlConnectString)
@@ -38,24 +37,25 @@ func NewPsqlRepository(config config.Provider) PsqlRepository {
 	}
 }
 
-func (p PsqlRepository) FindAllItems() ([]*entities.Item, error) {
+func (p PsqlRepository) FindAllItems() ([]entities.Item, error) {
 	conn, err := p.pool.Acquire(context.Background())
 	if err != nil {
 		return nil, fmt.Errorf("error acquiring connection: %v", err)
 	}
 	defer conn.Release()
 
-	rows, err := conn.Query(context.Background(), "SELECT id, name, price from ITEMS")
-	var outputRows [][]interface{}
+	rows, err := conn.Query(context.Background(), "SELECT id, name, price, created_at, updated_at from ITEMS")
+	var outputRows []entities.Item
 	for rows.Next() {
-		row, err := rows.Values()
+		row := entities.Item{}
+		err := rows.Scan(&row.Id, &row.Name, &row.Price, &row.CreatedAt, &row.UpdatedAt)
 		if err != nil {
 			return nil, fmt.Errorf("unexpected error for rows.Values(): %v", err)
 		}
 		outputRows = append(outputRows, row)
 	}
 
-	return nil, nil
+	return outputRows, nil
 }
 
 func (p PsqlRepository) StoreItem(entities.Item) error {

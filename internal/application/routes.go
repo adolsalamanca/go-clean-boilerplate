@@ -1,6 +1,7 @@
 package application
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"github.com/adolsalamanca/go-rest-boilerplate/internal/domain/entities"
@@ -28,7 +29,7 @@ func (s *Server) Health() http.HandlerFunc {
 func (s *Server) GetItems() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		_, err := s.service.GetItems()
+		i, err := s.service.GetItems()
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("Something wrong happened getting"))
@@ -36,7 +37,14 @@ func (s *Server) GetItems() http.HandlerFunc {
 		}
 
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("All good getting"))
+		out, err := json.Marshal(i)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("Something wrong happened getting"))
+			return
+		}
+
+		w.Write(out)
 
 	}
 }

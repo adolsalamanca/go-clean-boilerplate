@@ -12,16 +12,18 @@ import (
 type Service struct {
 	repo repository.ItemRepository
 	// collector
+	// tracing
+	// logger
 }
 
-func (s Service) GetItems() ([]*entities.Item, error) {
-	_, err := s.repo.FindAllItems()
+func (s Service) GetItems() ([]entities.Item, error) {
+	i, err := s.repo.FindAllItems()
 	if err != nil {
 		fmt.Printf("error getting items, %v", err)
 		return nil, err
 	}
 
-	return nil, nil
+	return i, nil
 }
 
 func (s Service) CreateItem(i entities.Item) error {

@@ -9,7 +9,6 @@ services:
       POSTGRES_HOST_AUTH_METHOD: trust
     ports:
       - '5432:5432'
-    profiles: ["acceptance_test"]
     volumes:
       - db:/var/lib/postgresql/data # Since docker 1.9.0 this command auto-creates a 'db' named volume to be used.
       - ./postgres/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql

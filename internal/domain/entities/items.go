@@ -3,7 +3,7 @@ package entities
 import "time"
 
 type Item struct {
-	Id        string
+	Id        int
 	Name      string
 	Price     float64
 	CreatedAt time.Time
