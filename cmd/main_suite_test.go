@@ -53,7 +53,6 @@ func (suite *AcceptanceTestSuite) SetupSuite() {
 	os.Setenv("DB_NAME", testDbName)
 
 	psqlConnectString := fmt.Sprintf("postgres://%s:@%s:%s/%s", testDbUser, testDbHost, testDbPort, testDbName)
-	//psqlConnectString := fmt.Sprintf("postgres://adol:@go-rest-boilerplate_db_1:5432/database_name")
 	fmt.Printf("connection string: %v \n", psqlConnectString)
 
 	conn, err := pgx.Connect(context.Background(), psqlConnectString)

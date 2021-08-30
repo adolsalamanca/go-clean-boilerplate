@@ -29,7 +29,7 @@ func (s *Server) Health() http.HandlerFunc {
 func (s *Server) GetItems() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		i, err := s.service.GetItems()
+		i, err := s.facade.GetItems()
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("Something wrong happened getting"))
@@ -52,7 +52,7 @@ func (s *Server) GetItems() http.HandlerFunc {
 func (s *Server) CreateItem() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		err := s.service.CreateItem(entities.Item{})
+		err := s.facade.CreateItem(entities.Item{})
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("Something wrong happened creating"))

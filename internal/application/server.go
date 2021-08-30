@@ -6,22 +6,22 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type Servicer interface {
+type Facader interface {
 	GetItems() ([]entities.Item, error)
 	CreateItem(i entities.Item) error
 }
 
 type Server struct {
-	router  *mux.Router
-	service Servicer
+	router *mux.Router
+	facade Facader
 	// collector
 	// tracing
 	// logger
 }
 
-func NewServer(svc *_interface.Service) *Server {
+func NewServer(facade *_interface.Facade) *Server {
 	return &Server{
-		router:  mux.NewRouter(),
-		service: svc,
+		router: mux.NewRouter(),
+		facade: facade,
 	}
 }
