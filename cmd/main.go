@@ -26,9 +26,9 @@ func main() {
 }
 
 func Run(cfg config.Provider) {
-	facade := _interface.NewFacade(cfg)
+	service := _interface.NewService(cfg)
 	_, cancelFunc := context.WithCancel(context.Background())
-	server := application.NewServer(facade)
+	server := application.NewServer(service)
 
 	go func() {
 		fmt.Printf("Starting server... \n")

@@ -25,7 +25,7 @@ func (s *Server) Health() http.HandlerFunc {
 
 func (s *Server) GetItems() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		i, err := s.facade.GetItems()
+		i, err := s.service.GetItems()
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte(err.Error()))
@@ -56,7 +56,7 @@ func (s *Server) CreateItem() http.HandlerFunc {
 			return
 		}
 
-		err = s.facade.CreateItem(i)
+		err = s.service.CreateItem(i)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("Something wrong happened creating"))

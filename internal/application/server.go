@@ -2,26 +2,25 @@ package application
 
 import (
 	"github.com/adolsalamanca/go-clean-boilerplate/internal/domain/entities"
-	_interface "github.com/adolsalamanca/go-clean-boilerplate/internal/interface"
 	"github.com/gorilla/mux"
 )
 
-type Facader interface {
+type Servicer interface {
 	GetItems() ([]entities.Item, error)
 	CreateItem(i entities.Item) error
 }
 
 type Server struct {
-	router *mux.Router
-	facade Facader
+	router  *mux.Router
+	service Servicer
 	// collector
 	// tracing
 	// logger
 }
 
-func NewServer(facade *_interface.Facade) *Server {
+func NewServer(service Servicer) *Server {
 	return &Server{
-		router: mux.NewRouter(),
-		facade: facade,
+		router:  mux.NewRouter(),
+		service: service,
 	}
 }
