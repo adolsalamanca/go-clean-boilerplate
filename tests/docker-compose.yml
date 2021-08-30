@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  db:
+    restart: always
+    image: postgres:12
+    environment:
+      POSTGRES_DB: database_name
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - '5432:5432'
+    volumes:
+      - db:/var/lib/postgresql/data # Since docker 1.9.0 this command auto-creates a 'db' named volume to be used.
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+
+volumes:
+  db: {}

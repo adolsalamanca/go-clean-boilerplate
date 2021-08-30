@@ -1,9 +1,9 @@
 .PHONY: test up build run stop down docker-login image-push
 
 test:
-	docker-compose -f docker-compose.yml up --build -d -V --force-recreate --remove-orphans
+	docker-compose -f tests/docker-compose.yml up --build -d -V --force-recreate --remove-orphans
 	go test -race -count=1 -p 1 -race -coverpkg=./... -covermode=atomic -coverprofile=coverage.out ./...
-	docker-compose -f docker-compose.yml rm -sfv
+	docker-compose -f tests/docker-compose.yml rm -sfv
 
 up:
 	docker-compose -f docker-compose.yml up -d

@@ -52,16 +52,10 @@ func (suite *AcceptanceTestSuite) SetupSuite() {
 	os.Setenv("DB_USER", testDbUser)
 	os.Setenv("DB_NAME", testDbName)
 
-	psqlConnectString := fmt.Sprintf("postgres://%s:@%s:%s/%s", testDbUser, testDbHost, testDbPort, testDbName)
-	fmt.Printf("connection string: %v \n", psqlConnectString)
-
-	conn, err := pgx.Connect(context.Background(), psqlConnectString)
-	suite.NoError(err)
-	_, err = conn.Query(context.Background(), "SELECT 1")
-	suite.NoError(err)
+	waitForDb()
 
 	cfg := config.LoadConfigProvider()
-	err = environment.Verify(cfg)
+	err := environment.Verify(cfg)
 	if err != nil {
 		log.Fatalf("could not initialize app: %v", err)
 	}
@@ -81,6 +75,27 @@ func getRandomTCPPort(t *testing.T) string {
 	portNumber := listener.Addr().(*net.TCPAddr).Port
 	listener.Close()
 	return fmt.Sprintf("%d", portNumber)
+}
+
+func waitForDb() {
+	psqlConnectString := fmt.Sprintf("postgres://%s:@%s:%s/%s", testDbUser, testDbHost, testDbPort, testDbName)
+	fmt.Printf("connection string: %v \n", psqlConnectString)
+
+	ticker := time.NewTimer(100 * time.Millisecond)
+	for i := 0; i <= 50; i++ {
+		<-ticker.C
+		conn, err := pgx.Connect(context.Background(), psqlConnectString)
+		if err != nil {
+			continue
+		}
+		_, err = conn.Query(context.Background(), "SELECT 1")
+		if err != nil {
+			continue
+		}
+
+		return
+	}
+
 }
 
 func waitFor(address string) {
