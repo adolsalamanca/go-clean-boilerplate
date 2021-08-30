@@ -26,9 +26,9 @@ jobs:
       - name: Check out code into the Go module directory
         uses: actions/checkout@v2
 
+      - name: Cache docker images
+        uses: satackey/action-docker-layer-caching@v0.0.11
+        continue-on-error: true
+
       - name: Test project
         run: make test
-
-      - name: Cache docker images
-      - uses: satackey/action-docker-layer-caching@v0.0.11
-        continue-on-error: true
