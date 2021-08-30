@@ -2,14 +2,11 @@ package persistence
 
 import (
 	"context"
-	"crypto/rand"
 	"fmt"
-	"math/big"
 	"os"
 
 	"github.com/adolsalamanca/go-clean-boilerplate/internal/domain/entities"
 	"github.com/adolsalamanca/go-clean-boilerplate/internal/infrastructure/config"
-	"github.com/bxcodec/faker/v3"
 	"github.com/jackc/pgx/v4/pgxpool"
 )
 
@@ -58,21 +55,14 @@ func (p PsqlRepository) FindAllItems() ([]entities.Item, error) {
 	return outputRows, nil
 }
 
-func (p PsqlRepository) StoreItem(entities.Item) error {
+func (p PsqlRepository) StoreItem(i entities.Item) error {
 	conn, err := p.pool.Acquire(context.Background())
 	if err != nil {
 		return fmt.Errorf("error acquiring connection: %v", err)
 	}
 	defer conn.Release()
 
-	name := faker.Word()
-	nBig, err := rand.Int(rand.Reader, big.NewInt(5000))
-	if err != nil {
-		panic(err)
-	}
-	n := nBig.Int64()
-
-	if _, err = conn.Exec(context.Background(), "INSERT INTO ITEMS(NAME, PRICE) VALUES($1, $2)", name, float64(n)); err != nil {
+	if _, err = conn.Exec(context.Background(), "INSERT INTO ITEMS(NAME, PRICE) VALUES($1, $2)", i.Name, i.Price); err != nil {
 		return fmt.Errorf("unable to insert due to: %v", err)
 	}
 

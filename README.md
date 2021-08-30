@@ -2,7 +2,7 @@
 #### Architecture Diagram (by Uncle Bob)
 <br>
 
-![Clean Architecture](https://github.com/adolsalamanca/go-clean-boilerplate/blob/main/CleanArchitecture.jpeg)
+![Clean Architecture](https://github.com/adolsalamanca/go-clean-boilerplate/blob/main/cleanArchitecture.jpeg)
 
 
 ## Layers

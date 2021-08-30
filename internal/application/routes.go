@@ -9,7 +9,6 @@ import (
 )
 
 func (s *Server) Routes() *mux.Router {
-
 	s.router.Methods(http.MethodGet).Path("/health").HandlerFunc(s.Health())
 	s.router.Methods(http.MethodGet).Path("/").HandlerFunc(s.GetItems())
 	s.router.Methods(http.MethodPost).Path("/").HandlerFunc(s.CreateItem())
@@ -19,20 +18,17 @@ func (s *Server) Routes() *mux.Router {
 
 func (s *Server) Health() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("Health is good"))
-
+		w.Write([]byte("Health is working"))
 	}
 }
 
 func (s *Server) GetItems() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-
 		i, err := s.facade.GetItems()
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte("Something wrong happened getting"))
+			w.Write([]byte(err.Error()))
 			return
 		}
 
@@ -40,7 +36,7 @@ func (s *Server) GetItems() http.HandlerFunc {
 		out, err := json.Marshal(i)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte("Something wrong happened getting"))
+			w.Write([]byte(err.Error()))
 			return
 		}
 
@@ -51,8 +47,16 @@ func (s *Server) GetItems() http.HandlerFunc {
 
 func (s *Server) CreateItem() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		i := entities.Item{}
+		d := json.NewDecoder(r.Body)
+		err := d.Decode(&i)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte("Bad request"))
+			return
+		}
 
-		err := s.facade.CreateItem(entities.Item{})
+		err = s.facade.CreateItem(i)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("Something wrong happened creating"))
@@ -63,5 +67,4 @@ func (s *Server) CreateItem() http.HandlerFunc {
 		w.Write([]byte("All good creating"))
 
 	}
-
 }
