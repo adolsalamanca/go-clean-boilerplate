@@ -9,10 +9,10 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/adolsalamanca/go-rest-boilerplate/internal/application"
-	"github.com/adolsalamanca/go-rest-boilerplate/internal/infrastructure/config"
-	"github.com/adolsalamanca/go-rest-boilerplate/internal/infrastructure/environment"
-	_interface "github.com/adolsalamanca/go-rest-boilerplate/internal/interface"
+	"github.com/adolsalamanca/go-clean-boilerplate/internal/application"
+	"github.com/adolsalamanca/go-clean-boilerplate/internal/infrastructure/config"
+	"github.com/adolsalamanca/go-clean-boilerplate/internal/infrastructure/environment"
+	_interface "github.com/adolsalamanca/go-clean-boilerplate/internal/interface"
 )
 
 func main() {

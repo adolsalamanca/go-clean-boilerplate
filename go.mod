@@ -1,4 +1,4 @@
-module github.com/adolsalamanca/go-rest-boilerplate
+module github.com/adolsalamanca/go-clean-boilerplate
 
 go 1.16
 

@@ -11,9 +11,9 @@ import (
 	"testing"
 	"time"
 
-	main "github.com/adolsalamanca/go-rest-boilerplate/cmd"
-	"github.com/adolsalamanca/go-rest-boilerplate/internal/infrastructure/config"
-	"github.com/adolsalamanca/go-rest-boilerplate/internal/infrastructure/environment"
+	main "github.com/adolsalamanca/go-clean-boilerplate/cmd"
+	"github.com/adolsalamanca/go-clean-boilerplate/internal/infrastructure/config"
+	"github.com/adolsalamanca/go-clean-boilerplate/internal/infrastructure/environment"
 	"github.com/jackc/pgx/v4"
 	"github.com/stretchr/testify/suite"
 )

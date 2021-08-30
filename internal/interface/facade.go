@@ -3,10 +3,10 @@ package _interface
 import (
 	"fmt"
 
-	"github.com/adolsalamanca/go-rest-boilerplate/internal/domain/entities"
-	"github.com/adolsalamanca/go-rest-boilerplate/internal/domain/repository"
-	"github.com/adolsalamanca/go-rest-boilerplate/internal/infrastructure/config"
-	"github.com/adolsalamanca/go-rest-boilerplate/internal/infrastructure/persistence"
+	"github.com/adolsalamanca/go-clean-boilerplate/internal/domain/entities"
+	"github.com/adolsalamanca/go-clean-boilerplate/internal/domain/repository"
+	"github.com/adolsalamanca/go-clean-boilerplate/internal/infrastructure/config"
+	"github.com/adolsalamanca/go-clean-boilerplate/internal/infrastructure/persistence"
 )
 
 type Facade struct {

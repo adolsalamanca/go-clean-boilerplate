@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/adolsalamanca/go-rest-boilerplate/internal/domain/entities"
+	"github.com/adolsalamanca/go-clean-boilerplate/internal/domain/entities"
 	"github.com/gorilla/mux"
 )
 

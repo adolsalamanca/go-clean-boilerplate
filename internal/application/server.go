@@ -1,8 +1,8 @@
 package application
 
 import (
-	"github.com/adolsalamanca/go-rest-boilerplate/internal/domain/entities"
-	_interface "github.com/adolsalamanca/go-rest-boilerplate/internal/interface"
+	"github.com/adolsalamanca/go-clean-boilerplate/internal/domain/entities"
+	_interface "github.com/adolsalamanca/go-clean-boilerplate/internal/interface"
 	"github.com/gorilla/mux"
 )
 

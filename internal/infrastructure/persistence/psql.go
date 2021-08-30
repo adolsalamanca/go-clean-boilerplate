@@ -7,8 +7,8 @@ import (
 	"math/big"
 	"os"
 
-	"github.com/adolsalamanca/go-rest-boilerplate/internal/domain/entities"
-	"github.com/adolsalamanca/go-rest-boilerplate/internal/infrastructure/config"
+	"github.com/adolsalamanca/go-clean-boilerplate/internal/domain/entities"
+	"github.com/adolsalamanca/go-clean-boilerplate/internal/infrastructure/config"
 	"github.com/bxcodec/faker/v3"
 	"github.com/jackc/pgx/v4/pgxpool"
 )
