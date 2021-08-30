@@ -26,9 +26,9 @@ func main() {
 }
 
 func Run(cfg config.Provider) {
-	service := _interface.NewService(cfg)
-	_, cancelFunc := context.WithCancel(context.Background())
-	server := application.NewServer(service)
+	logger := _interface.NewLogger()
+	service := _interface.NewService(cfg, logger)
+	server := application.NewServer(service, logger)
 
 	go func() {
 		fmt.Printf("Starting server... \n")
@@ -37,6 +37,7 @@ func Run(cfg config.Provider) {
 		}
 	}()
 
+	_, cancelFunc := context.WithCancel(context.Background())
 	arrangeGracefullyShutdown(cancelFunc)
 }
 

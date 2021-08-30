@@ -3,6 +3,7 @@ package _interface
 import (
 	"fmt"
 
+	"github.com/adolsalamanca/go-clean-boilerplate/internal/application"
 	"github.com/adolsalamanca/go-clean-boilerplate/internal/domain/entities"
 	"github.com/adolsalamanca/go-clean-boilerplate/internal/domain/repository"
 	"github.com/adolsalamanca/go-clean-boilerplate/internal/infrastructure/config"
@@ -10,15 +11,16 @@ import (
 )
 
 type Service struct {
-	repo repository.ItemRepository
+	repo   repository.ItemRepository
+	logger application.Logger
 	// collector
 	// tracing
-	// logger
 }
 
-func NewService(config config.Provider) *Service {
+func NewService(config config.Provider, logger *StandardLogger) *Service {
 	return &Service{
-		repo: persistence.NewPsqlRepository(config),
+		repo:   persistence.NewPsqlRepository(config),
+		logger: logger,
 	}
 }
 

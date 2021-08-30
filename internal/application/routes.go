@@ -9,6 +9,7 @@ import (
 )
 
 func (s *Server) Routes() *mux.Router {
+	s.router.Use(s.LoggerMiddleware)
 	s.router.HandleFunc("/health", s.Health()).Methods(http.MethodGet)
 	s.router.HandleFunc("/items", s.GetItems()).Methods(http.MethodGet)
 	s.router.HandleFunc("/items", s.CreateItem()).Methods(http.MethodPost)
