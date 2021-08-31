@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/adolsalamanca/go-clean-boilerplate/internal/domain/entities"
-	"github.com/adolsalamanca/go-clean-boilerplate/internal/infrastructure/config"
+	"github.com/adolsalamanca/go-clean-boilerplate/pkg/config"
 	"github.com/jackc/pgx/v4/pgxpool"
 )
 

@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/adolsalamanca/go-clean-boilerplate/pkg/logger"
 )
 
 func (s *Server) LoggerMiddleware(next http.Handler) http.Handler {
@@ -18,19 +20,19 @@ func (s *Server) LoggerMiddleware(next http.Handler) http.Handler {
 		headers := strings.Join(headersArr, ",")
 
 		s.logger.Info("request arrived",
-			NewFieldString("host", r.Host),
-			NewFieldString("headers", headers),
-			NewFieldString("method", r.Method),
+			logger.NewFieldString("host", r.Host),
+			logger.NewFieldString("headers", headers),
+			logger.NewFieldString("method", r.Method),
 		)
 
 		next.ServeHTTP(w, r)
 		elapsed := time.Since(start)
 
 		s.logger.Info("request finished",
-			NewFieldInt("duration_ms", int(elapsed.Milliseconds())),
-			NewFieldString("host", r.Host),
-			NewFieldString("headers", headers),
-			NewFieldString("method", r.Method),
+			logger.NewFieldInt("duration_ms", int(elapsed.Milliseconds())),
+			logger.NewFieldString("host", r.Host),
+			logger.NewFieldString("headers", headers),
+			logger.NewFieldString("method", r.Method),
 		)
 	})
 }

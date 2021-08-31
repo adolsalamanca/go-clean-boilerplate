@@ -1,11 +1,11 @@
-package environment
+package _interface
 
 import (
-	"errors"
 	"fmt"
+	"os"
 	"strings"
 
-	"github.com/adolsalamanca/go-clean-boilerplate/internal/infrastructure/config"
+	"github.com/adolsalamanca/go-clean-boilerplate/pkg/config"
 )
 
 const (
@@ -35,11 +35,11 @@ var (
 	}
 )
 
-func Verify(cfg config.Provider) error {
+func Verify(cfg config.Provider, logger Logger) error {
 	for _, key := range OptionalVars {
 		val := cfg.Get(key)
 		if val == nil {
-			fmt.Printf("optional environment vars '%s' missing \n", key)
+			logger.Warn(fmt.Sprintf("optional environment vars '%s' missing \n", key))
 		}
 	}
 
@@ -52,7 +52,8 @@ func Verify(cfg config.Provider) error {
 	}
 
 	if len(keys) > 0 {
-		return errors.New(fmt.Sprintf("required environment vars %s missing \n", strings.Join(keys, ", ")))
+		logger.Error(fmt.Sprintf("optional environment vars '%s' missing \n", strings.Join(keys, ", ")))
+		os.Exit(1)
 	}
 
 	return nil

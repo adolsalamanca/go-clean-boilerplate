@@ -3,21 +3,20 @@ package _interface
 import (
 	"fmt"
 
-	"github.com/adolsalamanca/go-clean-boilerplate/internal/application"
 	"github.com/adolsalamanca/go-clean-boilerplate/internal/domain/entities"
 	"github.com/adolsalamanca/go-clean-boilerplate/internal/domain/repository"
-	"github.com/adolsalamanca/go-clean-boilerplate/internal/infrastructure/config"
 	"github.com/adolsalamanca/go-clean-boilerplate/internal/infrastructure/persistence"
+	"github.com/adolsalamanca/go-clean-boilerplate/pkg/config"
 )
 
 type Service struct {
 	repo   repository.ItemRepository
-	logger application.Logger
+	logger Logger
 	// collector
 	// tracing
 }
 
-func NewService(config config.Provider, logger *StandardLogger) *Service {
+func NewService(config config.Provider, logger Logger) *Service {
 	return &Service{
 		repo:   persistence.NewPsqlRepository(config),
 		logger: logger,

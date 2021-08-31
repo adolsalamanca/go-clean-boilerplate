@@ -10,23 +10,24 @@ import (
 	"syscall"
 
 	"github.com/adolsalamanca/go-clean-boilerplate/internal/application"
-	"github.com/adolsalamanca/go-clean-boilerplate/internal/infrastructure/config"
-	"github.com/adolsalamanca/go-clean-boilerplate/internal/infrastructure/environment"
 	_interface "github.com/adolsalamanca/go-clean-boilerplate/internal/interface"
+	"github.com/adolsalamanca/go-clean-boilerplate/pkg/config"
+	"github.com/adolsalamanca/go-clean-boilerplate/pkg/logger"
 )
 
 func main() {
+	logger := logger.NewLogger()
+
 	cfg := config.LoadConfigProvider()
-	err := environment.Verify(cfg)
+	err := _interface.Verify(cfg, logger)
 	if err != nil {
 		log.Fatalf("could not initialize app: %v", err)
 	}
 
-	Run(cfg)
+	Run(cfg, logger)
 }
 
-func Run(cfg config.Provider) {
-	logger := _interface.NewLogger()
+func Run(cfg config.Provider, logger _interface.Logger) {
 	service := _interface.NewService(cfg, logger)
 	server := application.NewServer(service, logger)
 

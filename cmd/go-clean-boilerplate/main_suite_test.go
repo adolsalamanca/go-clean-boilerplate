@@ -11,9 +11,10 @@ import (
 	"testing"
 	"time"
 
-	main "github.com/adolsalamanca/go-clean-boilerplate/cmd"
-	"github.com/adolsalamanca/go-clean-boilerplate/internal/infrastructure/config"
-	"github.com/adolsalamanca/go-clean-boilerplate/internal/infrastructure/environment"
+	main "github.com/adolsalamanca/go-clean-boilerplate/cmd/go-clean-boilerplate"
+	_interface "github.com/adolsalamanca/go-clean-boilerplate/internal/interface"
+	config "github.com/adolsalamanca/go-clean-boilerplate/pkg/config"
+	"github.com/adolsalamanca/go-clean-boilerplate/pkg/logger"
 	"github.com/jackc/pgx/v4"
 	"github.com/stretchr/testify/suite"
 )
@@ -54,13 +55,14 @@ func (suite *AcceptanceTestSuite) SetupSuite() {
 
 	waitForDb()
 
+	logger := logger.NewLogger()
 	cfg := config.LoadConfigProvider()
-	err := environment.Verify(cfg)
+	err := _interface.Verify(cfg, logger)
 	if err != nil {
 		log.Fatalf("could not initialize app: %v", err)
 	}
 
-	go main.Run(cfg)
+	go main.Run(cfg, logger)
 
 	waitFor(hostPort)
 }
