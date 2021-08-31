@@ -7,6 +7,17 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
+type LogLevel int
+
+const (
+	DebugLevel = LogLevel(zapcore.DebugLevel)
+	InfoLevel  = LogLevel(zapcore.InfoLevel)
+	WarnLevel  = LogLevel(zapcore.WarnLevel)
+	ErrorLevel = LogLevel(zapcore.ErrorLevel)
+	PanicLevel = LogLevel(zapcore.PanicLevel)
+	FatalLevel = LogLevel(zapcore.FatalLevel)
+)
+
 type FieldType uint8
 
 type Field struct {
@@ -75,7 +86,7 @@ func (s StandardLogger) Error(msg string, fields ...Field) {
 	s.logger.Error(msg, zapFields[:]...)
 }
 
-func NewLogger() *StandardLogger {
+func NewLogger(level LogLevel) *StandardLogger {
 	atom := zap.NewAtomicLevel()
 
 	encoderCfg := zap.NewProductionEncoderConfig()
@@ -89,7 +100,7 @@ func NewLogger() *StandardLogger {
 	))
 
 	defer logger.Sync()
-	atom.SetLevel(zap.DebugLevel)
+	atom.SetLevel(zapcore.Level(level))
 
 	return &StandardLogger{
 		logger: logger,

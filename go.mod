@@ -3,7 +3,7 @@ module github.com/adolsalamanca/go-clean-boilerplate
 go 1.16
 
 require (
-	github.com/armon/go-metrics v0.3.9 // indirect
+	github.com/armon/go-metrics v0.3.9
 	github.com/gorilla/mux v1.8.0
 	github.com/jackc/pgx/v4 v4.13.0
 	github.com/spf13/viper v1.8.1

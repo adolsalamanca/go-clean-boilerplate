@@ -60,7 +60,7 @@ func (suite *AcceptanceTestSuite) SetupSuite() {
 
 	waitForDb()
 
-	logger := logger.NewLogger()
+	logger := logger.NewLogger(logger.DebugLevel)
 
 	cfg := config.LoadConfigProvider()
 	err := _interface.Verify(cfg, logger)

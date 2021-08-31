@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/adolsalamanca/go-clean-boilerplate/internal/domain/entities"
+	"github.com/adolsalamanca/go-clean-boilerplate/internal/domain"
 	"github.com/gorilla/mux"
 )
 
@@ -48,7 +48,7 @@ func (s *Server) GetItems() http.HandlerFunc {
 
 func (s *Server) CreateItem() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		i := entities.Item{}
+		i := domain.Item{}
 		d := json.NewDecoder(r.Body)
 		err := d.Decode(&i)
 		if err != nil {

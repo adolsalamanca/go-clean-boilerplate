@@ -1,22 +1,21 @@
 package _interface
 
 import (
-	"github.com/adolsalamanca/go-clean-boilerplate/internal/domain/entities"
-	"github.com/adolsalamanca/go-clean-boilerplate/internal/domain/repository"
-	"github.com/adolsalamanca/go-clean-boilerplate/internal/infrastructure/persistence"
+	"github.com/adolsalamanca/go-clean-boilerplate/internal/domain"
+	"github.com/adolsalamanca/go-clean-boilerplate/internal/infrastructure"
 	"github.com/adolsalamanca/go-clean-boilerplate/pkg/config"
 	log "github.com/adolsalamanca/go-clean-boilerplate/pkg/logger"
 )
 
 type Service struct {
-	repo   repository.ItemRepository
+	repo   domain.ItemRepository
 	logger Logger
 	// metrics
 	// tracing
 }
 
 func NewService(config config.Provider, logger Logger, collector MetricsCollector) (*Service, error) {
-	repo, err := persistence.NewPsqlRepository(config)
+	repo, err := infrastructure.NewPsqlRepository(config)
 	if err != nil {
 		return nil, err
 	}
@@ -26,7 +25,7 @@ func NewService(config config.Provider, logger Logger, collector MetricsCollecto
 	}, nil
 }
 
-func (s Service) GetItems() ([]entities.Item, error) {
+func (s Service) GetItems() ([]domain.Item, error) {
 	i, err := s.repo.FindAllItems()
 	if err != nil {
 		s.logger.Error("could not get items",
@@ -39,7 +38,7 @@ func (s Service) GetItems() ([]entities.Item, error) {
 	return i, nil
 }
 
-func (s Service) CreateItem(i entities.Item) error {
+func (s Service) CreateItem(i domain.Item) error {
 	err := s.repo.StoreItem(i)
 	if err != nil {
 		s.logger.Error("could not create items",

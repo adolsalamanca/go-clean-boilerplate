@@ -58,8 +58,24 @@ $ make test
 $ make up
 ```
 
+
+## Pipeline
+
+* For the pipeline, I typically use Github Actions which is a great tool to run our automatic builds, and could be also used to generate our container images and deployd to our desired platform (k8s, managed containers, functions as service... etc)
+* I have used an action to cache the images that we use in tests, (postgres, prometheus, statsd_exporter) so they run faster and our runners do not need to pull images in every single execution.
+* Apart from that, it simply relies on makefile to run tests.
+
 ## Author
-* **Adolfo Rodriguez** - *go-clean-boilerplate* - [adolsalamanca](https://github.com/adolsalamanca)
+* **Adol Rodriguez** - *go-clean-boilerplate* - [adolsalamanca](https://github.com/adolsalamanca)
+
+## Libraries
+* go-metric - Provides a metrics package used to expose application metrics.
+* mux - It's basically a Http router commonly used
+* pgx - Used as PostgreSQL driver.
+* viper - Configuration tool for our applications.
+* testify - Testing framework with a lot of capabilities.
+* zap - Lightweight structured logger. 
+
 
 
 ## Articles

@@ -16,7 +16,7 @@ import (
 )
 
 func main() {
-	logger := log.NewLogger()
+	logger := log.NewLogger(log.DebugLevel)
 
 	cfg := config.LoadConfigProvider()
 	err := _interface.Verify(cfg, logger)

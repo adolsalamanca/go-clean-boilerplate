@@ -1,10 +1,10 @@
-package persistence
+package infrastructure
 
 import (
 	"context"
 	"fmt"
 
-	"github.com/adolsalamanca/go-clean-boilerplate/internal/domain/entities"
+	"github.com/adolsalamanca/go-clean-boilerplate/internal/domain"
 	"github.com/adolsalamanca/go-clean-boilerplate/pkg/config"
 	"github.com/jackc/pgx/v4/pgxpool"
 )
@@ -30,7 +30,7 @@ func NewPsqlRepository(config config.Provider) (*PsqlRepository, error) {
 	}, nil
 }
 
-func (p PsqlRepository) FindAllItems() ([]entities.Item, error) {
+func (p PsqlRepository) FindAllItems() ([]domain.Item, error) {
 	conn, err := p.pool.Acquire(context.Background())
 	if err != nil {
 		return nil, fmt.Errorf("error acquiring connection: %v", err)
@@ -38,9 +38,9 @@ func (p PsqlRepository) FindAllItems() ([]entities.Item, error) {
 	defer conn.Release()
 
 	rows, err := conn.Query(context.Background(), "SELECT id, name, price, created_at, updated_at from ITEMS")
-	var outputRows []entities.Item
+	var outputRows []domain.Item
 	for rows.Next() {
-		row := entities.Item{}
+		row := domain.Item{}
 		err := rows.Scan(&row.Id, &row.Name, &row.Price, &row.CreatedAt, &row.UpdatedAt)
 		if err != nil {
 			return nil, fmt.Errorf("unexpected error for rows.Values(): %v", err)
@@ -51,7 +51,7 @@ func (p PsqlRepository) FindAllItems() ([]entities.Item, error) {
 	return outputRows, nil
 }
 
-func (p PsqlRepository) StoreItem(i entities.Item) error {
+func (p PsqlRepository) StoreItem(i domain.Item) error {
 	conn, err := p.pool.Acquire(context.Background())
 	if err != nil {
 		return fmt.Errorf("error acquiring connection: %v", err)
