@@ -3,7 +3,6 @@ package persistence
 import (
 	"context"
 	"fmt"
-	"os"
 
 	"github.com/adolsalamanca/go-clean-boilerplate/internal/domain/entities"
 	"github.com/adolsalamanca/go-clean-boilerplate/pkg/config"
@@ -14,23 +13,21 @@ type PsqlRepository struct {
 	pool *pgxpool.Pool
 }
 
-func NewPsqlRepository(config config.Provider) PsqlRepository {
+func NewPsqlRepository(config config.Provider) (*PsqlRepository, error) {
 	dbUser := config.GetString("DB_USER")
 	dbHost := config.GetString("DB_HOST")
 	dbPort := config.GetInt("DB_PORT")
 	dbName := config.GetString("DB_NAME")
 
 	psqlConnectString := fmt.Sprintf("postgres://%s:@%s:%d/%s", dbUser, dbHost, dbPort, dbName)
-
 	pool, err := pgxpool.Connect(context.Background(), psqlConnectString)
 	if err != nil {
-		fmt.Printf("could not connect to DB, %v \n", err)
-		os.Exit(1)
+		return nil, err
 	}
 
-	return PsqlRepository{
+	return &PsqlRepository{
 		pool: pool,
-	}
+	}, nil
 }
 
 func (p PsqlRepository) FindAllItems() ([]entities.Item, error) {
@@ -65,6 +62,5 @@ func (p PsqlRepository) StoreItem(i entities.Item) error {
 		return fmt.Errorf("unable to insert due to: %v", err)
 	}
 
-	fmt.Println("Inserted row successfully")
 	return nil
 }

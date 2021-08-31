@@ -13,5 +13,22 @@ services:
       - db:/var/lib/postgresql/data # Since docker 1.9.0 this command auto-creates a 'db' named volume to be used.
       - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
 
+  statsd_exporter:
+    image: prom/statsd-exporter
+    command: "--log.level=debug --statsd.mapping-config=/tmp/statsd_mapping.conf"
+    ports:
+      - "9102:9102"
+      - "9125:9125/udp"
+    volumes:
+      - "../config/metrics/statsd_mapping.conf:/tmp/statsd_mapping.conf"
+
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9000:9090"
+    volumes:
+      - "../config/metrics:/etc/prometheus"
+    command: --web.enable-lifecycle  --config.file=/etc/prometheus/prometheus.yml
+
 volumes:
   db: {}

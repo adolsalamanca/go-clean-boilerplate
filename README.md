@@ -23,7 +23,15 @@ You can find the different layers below, from outside to inside.
 * Domain layer (a.k.a.s Entities) : this is where our core resides, our specific system entities and sacred logic will be, this layer will have no clue about the rest of the system and shouldn't be something frequently changed.
     * code: ```$PROJECT/internal/domain```
 
-<br>  
+<br>
+
+Apart from those pretty well differentiated layers, there's a few folders:
+* Assets: used to store assets from the repo(icons, images...). Here we only have Uncle's Bob Clean Architecture diagram.
+* Cmd/App: this is a Go convention to store our main application.
+* Config: serve to store our configuration files, here we only have stuff related to metrics, statsd and prometheus specifically.
+* Pkg: another Go convention, here we save code that could be potentially used by external applications.
+* Test: additional stuff, in this project we have a parallel docker-compose to run tests and also a sql script for DB initialization(this one could be inside a migrations folder to be run by Goose or another migrations tool instead)
+
 
 #### Architecture Diagram (by Uncle Bob)
 

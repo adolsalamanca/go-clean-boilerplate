@@ -10,10 +10,21 @@ import (
 type FieldType uint8
 
 type Field struct {
+	// Any    []byte
 	Key    string
 	String string
 	Int    int
+	Float  float32
 }
+
+/*
+func NewFieldAny(key string, value []byte) Field {
+	return Field{
+		Key: key,
+		Any: value,
+	}
+}
+*/
 
 func NewFieldString(key, value string) Field {
 	return Field{
@@ -26,6 +37,13 @@ func NewFieldInt(key string, value int) Field {
 	return Field{
 		Key: key,
 		Int: value,
+	}
+}
+
+func NewFieldFloat(key string, float float32) Field {
+	return Field{
+		Key:   key,
+		Float: float,
 	}
 }
 
@@ -90,8 +108,31 @@ func toZapFields(fields []Field) []zap.Field {
 				zapFields = append(zapFields, zap.Int(f.Key, f.Int))
 				continue
 			}
-
+			if f.Float != 0 {
+				zapFields = append(zapFields, zap.Float32p(f.Key, &f.Float))
+				continue
+			}
+			/*
+				if len(f.Any) > 0 {
+								zapFields = append(zapFields, zap.Any(f.Key, f.Any))
+							}
+			*/
 		}
 	}
 	return zapFields
+}
+
+// NoOpLogger fulfills the required Logger interface without logging at all
+type NoOpLogger struct{}
+
+func (s NoOpLogger) Debug(msg string, fields ...Field) {}
+
+func (s NoOpLogger) Info(msg string, fields ...Field) {}
+
+func (s NoOpLogger) Warn(msg string, fields ...Field) {}
+
+func (s NoOpLogger) Error(msg string, fields ...Field) {}
+
+func NewNoOpLogger() *NoOpLogger {
+	return &NoOpLogger{}
 }

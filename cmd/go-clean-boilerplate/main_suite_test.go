@@ -15,15 +15,18 @@ import (
 	_interface "github.com/adolsalamanca/go-clean-boilerplate/internal/interface"
 	config "github.com/adolsalamanca/go-clean-boilerplate/pkg/config"
 	"github.com/adolsalamanca/go-clean-boilerplate/pkg/logger"
+	"github.com/adolsalamanca/go-clean-boilerplate/pkg/metrics"
 	"github.com/jackc/pgx/v4"
 	"github.com/stretchr/testify/suite"
 )
 
 const (
-	testDbPort = "5432"
-	testDbHost = "localhost"
-	testDbUser = "adol"
-	testDbName = "database_name"
+	testDbPort     = "5432"
+	testDbHost     = "localhost"
+	testDbUser     = "adol"
+	testDbName     = "database_name"
+	testStatsdHost = "localhost"
+	testStatsdPort = "9125"
 )
 
 type AcceptanceTestSuite struct {
@@ -44,7 +47,7 @@ func (suite *AcceptanceTestSuite) SetupSuite() {
 	suite.serverAddress = fmt.Sprintf("http://%s", hostPort)
 	fmt.Printf("Server address: %s \n", suite.serverAddress)
 	suite.httpClient = &http.Client{
-		Timeout: time.Second * 5,
+		Timeout: time.Second * 30,
 	}
 
 	os.Setenv("SERVER_PORT", tcpPort)
@@ -52,18 +55,26 @@ func (suite *AcceptanceTestSuite) SetupSuite() {
 	os.Setenv("DB_HOST", testDbHost)
 	os.Setenv("DB_USER", testDbUser)
 	os.Setenv("DB_NAME", testDbName)
+	os.Setenv("STATSD_HOST", testStatsdHost)
+	os.Setenv("STATSD_PORT", testStatsdPort)
 
 	waitForDb()
 
 	logger := logger.NewLogger()
+
 	cfg := config.LoadConfigProvider()
 	err := _interface.Verify(cfg, logger)
 	if err != nil {
 		log.Fatalf("could not initialize app: %v", err)
 	}
 
-	go main.Run(cfg, logger)
+	collector, err := metrics.NewMetricsCollector(fmt.Sprintf("%s:%d",
+		cfg.GetString("STATSD_HOST"),
+		cfg.GetInt("STATSD_PORT")),
+		"go_rest_boilerplate",
+	)
 
+	go main.Run(cfg, logger, collector)
 	waitFor(hostPort)
 }
 

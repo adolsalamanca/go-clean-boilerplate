@@ -7,10 +7,10 @@ import (
 )
 
 type Server struct {
-	router  *mux.Router
-	service Servicer
-	logger  _interface.Logger
-	// collector
+	router    *mux.Router
+	service   Servicer
+	logger    _interface.Logger
+	collector _interface.MetricsCollector
 	// tracing
 }
 
@@ -19,10 +19,11 @@ type Servicer interface {
 	CreateItem(i entities.Item) error
 }
 
-func NewServer(service Servicer, logger _interface.Logger) *Server {
+func NewServer(service Servicer, logger _interface.Logger, collector _interface.MetricsCollector) *Server {
 	return &Server{
-		logger:  logger,
-		router:  mux.NewRouter(),
-		service: service,
+		collector: collector,
+		logger:    logger,
+		router:    mux.NewRouter(),
+		service:   service,
 	}
 }

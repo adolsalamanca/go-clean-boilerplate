@@ -38,14 +38,14 @@ services:
       - "9102:9102"
       - "9125:9125/udp"
     volumes:
-      - "./metrics/statsd_mapping.conf:/tmp/statsd_mapping.conf"
+      - "./config/metrics/statsd_mapping.conf:/tmp/statsd_mapping.conf"
 
   prometheus:
     image: prom/prometheus
     ports:
       - "9000:9090"
     volumes:
-      - ./metrics:/etc/prometheus
+      - "./config/metrics:/etc/prometheus"
     command: --web.enable-lifecycle  --config.file=/etc/prometheus/prometheus.yml
 
 volumes:

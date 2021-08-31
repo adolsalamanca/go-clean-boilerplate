@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -12,37 +11,45 @@ import (
 	"github.com/adolsalamanca/go-clean-boilerplate/internal/application"
 	_interface "github.com/adolsalamanca/go-clean-boilerplate/internal/interface"
 	"github.com/adolsalamanca/go-clean-boilerplate/pkg/config"
-	"github.com/adolsalamanca/go-clean-boilerplate/pkg/logger"
+	log "github.com/adolsalamanca/go-clean-boilerplate/pkg/logger"
+	"github.com/adolsalamanca/go-clean-boilerplate/pkg/metrics"
 )
 
 func main() {
-	logger := logger.NewLogger()
+	logger := log.NewLogger()
 
 	cfg := config.LoadConfigProvider()
 	err := _interface.Verify(cfg, logger)
 	if err != nil {
-		log.Fatalf("could not initialize app: %v", err)
+		logger.Error("could not initialize app: %v", log.NewFieldString("error", err.Error()))
 	}
 
-	Run(cfg, logger)
+	statsdAddress := fmt.Sprintf("%s:%d", cfg.GetString("STATSD_HOST"), cfg.GetInt("STATSD_PORT"))
+	collector, err := metrics.NewMetricsCollector(statsdAddress, "go_rest_boilerplate")
+
+	Run(cfg, logger, collector)
 }
 
-func Run(cfg config.Provider, logger _interface.Logger) {
-	service := _interface.NewService(cfg, logger)
-	server := application.NewServer(service, logger)
+func Run(cfg config.Provider, logger _interface.Logger, collector _interface.MetricsCollector) {
+
+	svc, err := _interface.NewService(cfg, logger, collector)
+	if err != nil {
+		logger.Error("could not create service", log.NewFieldString("error", err.Error()))
+	}
+	server := application.NewServer(svc, logger, collector)
 
 	go func() {
-		fmt.Printf("Starting server... \n")
+		logger.Info("Starting server")
 		if err := http.ListenAndServe(fmt.Sprintf(":%s", cfg.GetString("SERVER_PORT")), server.Routes()); err != nil {
-			log.Fatalf("could not initialize server: %v", err)
+			logger.Error("could not initialize app: %v", log.NewFieldString("error", err.Error()))
 		}
 	}()
 
 	_, cancelFunc := context.WithCancel(context.Background())
-	arrangeGracefullyShutdown(cancelFunc)
+	arrangeGracefullyShutdown(cancelFunc, logger)
 }
 
-func arrangeGracefullyShutdown(cancelFunc context.CancelFunc) {
+func arrangeGracefullyShutdown(cancelFunc context.CancelFunc, logger _interface.Logger) {
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(
 		signalChan,
@@ -52,7 +59,7 @@ func arrangeGracefullyShutdown(cancelFunc context.CancelFunc) {
 
 	<-signalChan
 
-	log.Printf("Shutting app...")
+	logger.Info("shutting down app")
 	cancelFunc()
 	os.Exit(1)
 }

@@ -20,4 +20,4 @@ scrape_configs:
     follow_redirects: true
     static_configs:
       - targets:
-          - "go_rest_boilerplate_statsd_exporter_1:9102"
+          - "go-clean-boilerplate_statsd_exporter_1:9102"
